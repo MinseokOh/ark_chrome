@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="./static/css/semantic.min.css">
+
+	<script src="./static/js/jquery.min.js"></script>
+	<script src="./static/js/jquery.cookie.js"></script>	
+	<script src="./static/js/semantic.min.js"></script>
+
+	<style>
+		body {
+			width : 260px; 
+			min-height:500px;
+			background-image: url(./ark_planet.png);
+		}
+		.layer{
+			position:absolute;
+			top:30%;
+			left:20%;
+			margin:-50px 0 0 -50px;
+		}
+		table {
+			width: 100%;
+		}
+		th, td {
+			padding: 2px;
+			text-align: center;
+			border-bottom: 1px solid #ddd;
+		}
+	</style>
+
+	<title>ARK Chrome Wallet</title>
+</head>
+<body>
+	<div class="ui top fixed inverted menu">
+		<div class="item arkio">
+			<img src="./ark128x128.png">
+		</div>
+		<div class="item">
+			<b>ARK CHROME WALLET</b>
+		</div>
+		<div class="item">
+			<b>v0.1.0</b>
+		</div>		
+	</div>
+
+	<div class="layer transition hidden" id="main">
+		<div class="ui cards">
+			<div class="card">
+				<div class="content">
+					<div class="header">Ѧ ARK ADDRESS</div>
+					<div class="description">
+						<div class="ui input fluid hidden address">
+							<input type="text" name="adress" placeholder="address">
+						</div>
+					</div>
+				</div>
+				<div class="ui bottom attached violet button addWalletBtn">
+					Add Wallet
+				</div>
+			</div>
+			<div class="card">
+				<table>
+					<tbody>
+						<tr>
+							<td>Bitcoin(Ƀ)</td>
+							<td class="btcPrice">0.00018 Ƀ</td>
+						</tr>
+						<tr>
+							<td>US Dollar(USD)</td>
+							<td class="usdPrice">0.00018 USD</td>
+						</tr>
+						<tr>
+							<td>Korea Won(KRW)</td>
+							<td class="krwPrice">0.00018 KRW</td>
+						</tr>    				
+					</tbody>
+				</table>
+			</div>
+			<div class="card">
+				<a class="ui red button download">
+					DOWNLOAD DESKTOP WALLET
+				</a> 	   		
+			</div>
+			<div class="card">
+				<div class="ui black button join">
+					JOIN ARK COMMUNITY
+				</div> 	   		
+			</div>  	   		 	   		
+		</div>
+	</div>
+
+	<div class="transition hidden" id="info">
+		<br><br><br>
+		<div class="ui container">
+			<div class="ui segment">
+				<h3 class="ui header">
+					Address
+					<div class="sub header" name="walletAddress">Sub Header</div>
+					<br>
+					<div class="sub header" name="balance">Ѧ32092.92218599 
+					</div>
+				</h3>
+			</div>
+			<div class="ui segment">			
+				<div style="width:100%; height:280px; overflow:auto">
+					<table>
+						<thead>
+							<tr>
+								<th>Type</th><th>Total Ѧ</th><th class="currency">Total Ƀ</th>
+							</tr>
+						</thead>
+						<tbody id="transaction">												
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="./static/js/arkexplorer.js"></script>
+</html>
