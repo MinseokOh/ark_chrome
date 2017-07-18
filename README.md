@@ -1,2 +1,3 @@
-# ark_chrome
-ark chrome client
+# ARK CHROME CLIENT v0.1.0
+
+Ark wallet for Chrome Extension 
