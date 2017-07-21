@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="./static/css/semantic.min.css">
 
 	<script src="./static/js/jquery.min.js"></script>
@@ -9,16 +10,13 @@
 	<script src="./static/js/semantic.min.js"></script>
 
 	<style>
-		body {
-			width : 260px; 
-			min-height:500px;
-			background-image: url(./ark_planet.png);
+		body > .grid {
+			height: 100%;
 		}
-		.layer{
-			position:absolute;
-			top:30%;
-			left:20%;
-			margin:-50px 0 0 -50px;
+		body {
+			width : 600px; 
+			min-height:500px;
+			background-image: url(./static/image/Ark.jpg);
 		}
 		table {
 			width: 100%;
@@ -28,67 +26,83 @@
 			text-align: center;
 			border-bottom: 1px solid #ddd;
 		}
+		.button.white {
+			background-color: #ffffff;
+		}
 	</style>
 
-	<title>ARK Chrome Wallet</title>
+	<title>ARK Chrome Client</title>
 </head>
 <body>
 	<div class="ui top fixed inverted menu">
 		<div class="item arkio">
-			<img src="./ark128x128.png">
+			<img src="./static/image/ark128x128.png">
+			<b>ARK CHROME CLIENT - 0.1.1</b>			
 		</div>
-		<div class="item">
-			<b>ARK CHROME WALLET</b>
-		</div>
-		<div class="item">
-			<b>v0.1.0</b>
+		<div class="right menu">
+			<div>
+				<button class="ui huge black icon button">
+					<i class="home icon"></i>
+				</button>
+			</div>
+			<div>
+				<button class="ui huge black icon button">
+					<i class="setting icon"></i>
+				</button>
+			</div>
 		</div>		
 	</div>
 
-	<div class="layer transition hidden" id="main">
-		<div class="ui cards">
-			<div class="card">
-				<div class="content">
-					<div class="header">Ѧ ARK ADDRESS</div>
-					<div class="description">
-						<div class="ui input fluid hidden address">
-							<input type="text" name="adress" placeholder="address">
+	<div class="ui middle aligned center aligned grid blurring transition hidden" id="main">
+		<div class="thirteen wide column" id="wallet">
+			<h4 class="ui top attached header" style="background-color:#817ded">
+				<p style="color:#ffffff">ARK WALLET</p>
+			</h4>
+			<h4 class="ui bottom attached segment">
+				<div class="ui divided selection list">
+					<a class="item">
+						<div class="right floated content">Ѧ31995.06187217</div>
+						<div class="left floated content">ARGRyHySPTVqnpeJEu68364n7cjf2kK6P2</div>
+					</a>
+				</div>
+				<button class="ui icon button white addaddress">
+					<i class="plus icon"></i>
+					ADD ADDRESS
+				</button>
+			</h4>
+		</div>
+
+		<div class="ui dimmer">
+			<div class="content">
+				<div class="center">
+					<div class="ui middle aligned center aligned grid">
+						<div class="eleven wide column">
+							<h4 class="ui top attached header" style="background-color:#817ded">
+								<p style="color:#ffffff">ADD ACCOUNT</p>
+							</h4>
+							<h4 class="ui bottom attached segment">
+								<div class="ui message">
+									<div class="content">
+										<div class="header">
+											Enter Wallet Address
+										</div>
+										<p>Wallet address will saved on your chrome browser</p>
+									</div>
+								</div>
+								<div class="ui fluid input">
+									<input type="text" placeholder="Search...">
+								</div>
+								<br>
+								<button class="ui white disabled button">ADD</button>								
+								<button class="ui white button">CANCEL</button>
+							</h4>
 						</div>
 					</div>
 				</div>
-				<div class="ui bottom attached violet button addWalletBtn">
-					Add Wallet
-				</div>
 			</div>
-			<div class="card">
-				<table>
-					<tbody>
-						<tr>
-							<td>Bitcoin(Ƀ)</td>
-							<td class="btcPrice">0.00018 Ƀ</td>
-						</tr>
-						<tr>
-							<td>US Dollar(USD)</td>
-							<td class="usdPrice">0.00018 USD</td>
-						</tr>
-						<tr>
-							<td>Korea Won(KRW)</td>
-							<td class="krwPrice">0.00018 KRW</td>
-						</tr>    				
-					</tbody>
-				</table>
-			</div>
-			<div class="card">
-				<a class="ui red button download">
-					DOWNLOAD DESKTOP WALLET
-				</a> 	   		
-			</div>
-			<div class="card">
-				<div class="ui black button join">
-					JOIN ARK COMMUNITY
-				</div> 	   		
-			</div>  	   		 	   		
 		</div>
+
+		
 	</div>
 
 	<div class="transition hidden" id="info">
@@ -119,5 +133,6 @@
 		</div>
 	</div>
 </body>
+<script src="./static/js/api.js"></script>
 <script src="./static/js/arkexplorer.js"></script>
 </html>

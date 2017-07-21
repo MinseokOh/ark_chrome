@@ -25,6 +25,10 @@ function init(){
 		chrome.tabs.create({'url': "https://ark.io" });
 	});
 
+	$('.addaddress').click(function(){
+		showAddAcount();
+	});
+
 	getBalance();
 
 	getCookie(function(data){
@@ -32,12 +36,12 @@ function init(){
 		address = data.address;
 		if(address == null){
 			$('.addWalletBtn').click(function(){
-				getAccount($('input[name=adress]').val());
+				loadAccount($('input[name=adress]').val());
 			});
 		} else {
 			$('.addWalletBtn').text(address.substring(0, 25) + "...");
 			$('.addWalletBtn').click(function(){
-				getAccount(address);
+				loadAccount(address);
 			});
 			$('input[name=adress]').remove();			
 		}
@@ -45,28 +49,18 @@ function init(){
 
 }
 
-function getAccount(address){
-	showMain();	
-	var url = getAccountURL + "?address=" + address;
-	$.ajax({
-            type: "GET", //or GET
-            url: url,
-            crossDomain:true,
-            cache:false,
-            async:false,
-            success: function(data){      
-            	if(data.success == true){
-            		showInfo();
-            		setAccountData(data);
-            	} else {
-            		showMain();
-            	}
-            },
-            error: function(data){
-            	$('.addWalletBtn').removeClass('disabled');                   
-            	console.log(data);
-            }
-        });
+function loadAccount(address) {
+	getAccount(
+		address, 
+		function(data){
+			if(data.success == true) {
+				showInfo();
+				setAccountData(data);
+			} else {
+				showMain();
+			}
+		}
+	);
 }
 
 function setAccountData(data){
@@ -159,6 +153,8 @@ function getKRWBalance(){
 }
 
 
+
+
 function typeConverter(senderid){
 	return senderid == wallet_address;
 }
@@ -197,6 +193,10 @@ function showMain(){
 		animation  : 'fade',
 		duration   : '1.2s',
 	});
+}
+
+function showAddAcount(){
+	$('.ui.dimmer').dimmer('show');
 }
 
 function showInfo(){
