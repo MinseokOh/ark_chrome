@@ -6,9 +6,12 @@
 	<link rel="stylesheet" type="text/css" href="./static/css/semantic.min.css">
 
 	<script src="./static/js/jquery.min.js"></script>
-	<script src="./static/js/jquery.cookie.js"></script>	
+	<script src="./static/js/jquery.cookie.js"></script>
+	<script src="./static/js/jquery.qrcode.min.js"></script>
 	<script src="./static/js/semantic.min.js"></script>
-
+	<script src="./arkjs/app.js"></script>
+	<script src="./static/js/ui.js"></script>
+	<script src="./static/js/api.js"></script>
 	<style>
 		body > .grid {
 			height: 100%;
@@ -37,11 +40,11 @@
 	<div class="ui top fixed inverted menu">
 		<div class="item arkio">
 			<img src="./static/image/ark128x128.png">
-			<b>ARK CHROME CLIENT - 0.1.1</b>			
+			<b>&nbsp;&nbsp;ARK CHROME CLIENT - 0.1.1</b>			
 		</div>
 		<div class="right menu">
 			<div>
-				<button class="ui huge black icon button">
+				<button class="ui huge black icon button btn home">
 					<i class="home icon"></i>
 				</button>
 			</div>
@@ -53,55 +56,52 @@
 		</div>		
 	</div>
 
-	<div class="ui middle aligned center aligned grid blurring transition hidden" id="main">
+	<div class="ui middle aligned center aligned grid blurring transition hidden" id="home">
+		<!-- Wallet List -->	
 		<div class="thirteen wide column" id="wallet">
 			<h4 class="ui top attached header" style="background-color:#817ded">
-				<p style="color:#ffffff">ARK WALLET</p>
+				<p style="color:#ffffff" id="wallet_title">MY ACCOUNTS Ѧ0.00 / Ƀ0.00</p>
 			</h4>
 			<h4 class="ui bottom attached segment">
-				<div class="ui divided selection list">
-					<a class="item">
-						<div class="right floated content">Ѧ31995.06187217</div>
-						<div class="left floated content">ARGRyHySPTVqnpeJEu68364n7cjf2kK6P2</div>
-					</a>
+				<div class="ui divided selection list" id="wallet_list">
 				</div>
-				<button class="ui icon button white addaddress">
+				<button class="ui icon button white pp addWallet" condition="show">
 					<i class="plus icon"></i>
 					ADD ADDRESS
 				</button>
 			</h4>
 		</div>
 
-		<div class="ui dimmer">
+		<!-- Add Wallet Popup -->
+		<div class="ui dimmer" id="addwallet">
 			<div class="content">
 				<div class="center">
 					<div class="ui middle aligned center aligned grid">
 						<div class="eleven wide column">
 							<h4 class="ui top attached header" style="background-color:#817ded">
-								<p style="color:#ffffff">ADD ACCOUNT</p>
+								<p style="color:#ffffff">ADD WALLET</p>
 							</h4>
 							<h4 class="ui bottom attached segment">
 								<div class="ui message">
 									<div class="content">
 										<div class="header">
-											Enter Wallet Address
+											Please enter your wallet address
 										</div>
 										<p>Wallet address will saved on your chrome browser</p>
 									</div>
 								</div>
 								<div class="ui fluid input">
-									<input type="text" placeholder="Search...">
+									<input type="text" placeholder="address" name="address">
 								</div>
 								<br>
-								<button class="ui white disabled button">ADD</button>								
-								<button class="ui white button">CANCEL</button>
+								<button class="ui white disabled button btn addWallet">ADD</button>								
+								<button class="ui white button pp addWallet" condition="hide">CANCEL</button>
 							</h4>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-
 		
 	</div>
 
@@ -109,16 +109,29 @@
 		<br><br><br>
 		<div class="ui container">
 			<div class="ui segment">
-				<h3 class="ui header">
-					Address
-					<div class="sub header" name="walletAddress">Sub Header</div>
-					<br>
-					<div class="sub header" name="balance">Ѧ32092.92218599 
+				<div class="ui grid">
+					<div class="three wide column">	
+						<div id="qrcode">
+						</div>	
+					</div>		
+					<div class="eleven wide column">
+						<h3 class="ui header">
+							Address
+							<div class="sub header" name="walletAddress">Sub Header</div>
+							<br>
+							<div class="sub header" name="balance">Ѧ32092.92218599 
+							</div>
+						</h3>
 					</div>
-				</h3>
+					<div class="two wide column">
+						<button class="ui right floated white icon button">
+							<i class="mail icon"></i>
+						</button>
+					</div>					
+				</div>
 			</div>
 			<div class="ui segment">			
-				<div style="width:100%; height:280px; overflow:auto">
+				<div style="width:100%; height:260px; overflow:auto">
 					<table>
 						<thead>
 							<tr>
@@ -133,6 +146,5 @@
 		</div>
 	</div>
 </body>
-<script src="./static/js/api.js"></script>
 <script src="./static/js/arkexplorer.js"></script>
 </html>

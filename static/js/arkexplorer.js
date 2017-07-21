@@ -1,100 +1,65 @@
-var getAccountURL = "https://explorer.ark.io/api/getAccount";
-var getTransactionURL = "https://explorer.ark.io/api/getTransactionsByAddress"
-var wallet_address;
-
-var btc_currency;
-var usd_currency;
-var krw_currency;
+var cacheWalletData;
 
 var currency = 'btc';
-
+var btc_currency = 0.0001;
 init();
 
 function init(){
-	showMain();
-
-	$('.download').click(function(){
-		chrome.tabs.create({'url': "https://github.com/ArkEcosystem/ark-desktop/releases" } );
-	});
-
-	$('.join').click(function(){
-		chrome.tabs.create({'url': "https://ark.io/slack" });
-	});
-
-	$('.arkio').click(function(){
-		chrome.tabs.create({'url': "https://ark.io" });
-	});
-
-	$('.addaddress').click(function(){
-		showAddAcount();
-	});
-
-	getBalance();
-
-	getCookie(function(data){
-		console.log(data);
-		address = data.address;
-		if(address == null){
-			$('.addWalletBtn').click(function(){
-				loadAccount($('input[name=adress]').val());
-			});
-		} else {
-			$('.addWalletBtn').text(address.substring(0, 25) + "...");
-			$('.addWalletBtn').click(function(){
-				loadAccount(address);
-			});
-			$('input[name=adress]').remove();			
-		}
-	});
-
+	initEvent();
+	loadAccount();
+	showHome();	
 }
 
-function loadAccount(address) {
-	getAccount(
-		address, 
-		function(data){
-			if(data.success == true) {
-				showInfo();
-				setAccountData(data);
+function loadAccount() {
+	getCookie(function(data){
+		address = data.address;
+		if(address != null){
+			if(cacheWalletData == null) {
+				getAccount({
+					data : {
+						address : address
+					}, 
+					callback : function(data){
+						if(data.success == true) {
+							cacheWalletData = data;
+							setWalletData();
+						}
+					}
+				});
 			} else {
-				showMain();
+				setWalletData();
 			}
 		}
-	);
+	});
 }
 
-function setAccountData(data){
-	wallet_address = data.address;
-	setCookie(wallet_address);
+function setWalletData(){
+	var data = cacheWalletData;
+	$('#wallet_title').text('MY ACCOUNTS ' + 'Ѧ'+ amountConverter(data.balance));
+
+	var element = '<a class="item info"><div class="right floated content">Ѧ${AMOUNT}</div><div class="left floated content">${WALLET_ADDRESS}</div></a>';
+	$('#wallet_list').empty();	
+	$('#wallet_list').append(element.replace('${AMOUNT}', amountConverter(data.balance)).replace('${WALLET_ADDRESS}', data.address));
+
+	$('.item.info').click(function(){
+		showHome(showInfo);
+	})
 
 	$('div[name=walletAddress]').text(data.address);
-	$('div[name=balance]').text('Ѧ'+ amountConverter(data.balance));
+	$('div[name=balance]').text('Ѧ'+amountConverter(data.balance));
 
-	getTransaction();
-}
+	$('#qrcode').qrcode({width: 90,height: 90,text: JSON.stringify({a:data.address})});
 
-
-function getTransaction(){
-	var url = getTransactionURL + "?address=" + wallet_address + "&limit=20&offset=0";
-	console.log(url);
-	$.ajax({
-            type: "GET", //or GET
-            url: url,
-            crossDomain:true,
-            cache:false,
-            async:false,
-            success: function(data){
-            	if(data.success == true){
-            		console.log(data);
-            		setTransactionData(data.transactions);
-            	} else {
-            		console.log(data);
-            	}
-            },
-            error: function(data){
-            	console.log(data);
-            }
-        });
+	getTransactionByAddress({
+		data : {
+			limit : 30,
+			offset : 0,
+			address : data.address
+		},
+		callback : function(data) {
+			setTransactionData(data.transactions);
+		}
+	})
 }
 
 function setTransactionData(data){
@@ -111,52 +76,47 @@ function setTransactionData(data){
 	}
 }
 
-function getBalance(){
-	url = "https://api.coinmarketcap.com/v1/ticker/ark/";
-	$.ajax({
-            type: "GET", //or GET
-            url: url,
-            crossDomain:true,
-            cache:false,
-            async:false,
-            success: function(data){
-            	usd_currency = data[0].price_usd;            	
-            	btc_currency = data[0].price_btc;
 
-				$('.usdPrice').text("$ " + usd_currency);
-				$('.btcPrice').text("Ƀ " + btc_currency);
-				getKRWBalance();		
-            },
-            error: function(data){
-            	console.log(data);
-            }
-        });
+function initEvent(){
+	$('.btn.home').click(function(){
+		if(menu == 'info'){
+			showInfo(showHome);
+		}
+	});
+
+	$('.pp.addWallet').click(function(){
+		showAddWallet($(this).attr('condition'));
+	});
+
+	$('.btn.addWallet').click(function(){
+		getAccount({
+			data : {
+				address : $('input[name=address]').val()
+			}, 
+			callback : function(data){
+				if(data.success == true) {
+					cacheWalletData = data;
+					setCookie(data.address);
+					loadAccount();
+					showAddWallet('hide');
+				} else {
+					$('input[name=address]').parent().addClass('error');
+				}
+			}
+		});
+	});	
+
+	$('input[name=address]').on('input',function(){
+		if($(this).val() == ""){
+			$('.btn.addWallet').addClass('disabled');			
+		} else {
+			$('.btn.addWallet').removeClass('disabled');
+		}
+	});	
 }
-
-function getKRWBalance(){
-	url = "https://api.coinone.co.kr/ticker/?format=json&currency=btc";
-	$('.krwPrice').text('');
-	$.ajax({
-            type: "GET", //or GET
-            url: url,
-            crossDomain:true,
-            cache:false,
-            async:false,
-            success: function(data){
-            	krw_currency = parseInt(data.last * btc_currency);
-            	$('.krwPrice').text("₩ " + krw_currency);
-            },
-            error: function(data){
-            	console.log(data);
-            },
-        });
-}
-
-
-
 
 function typeConverter(senderid){
-	return senderid == wallet_address;
+	return senderid == cacheWalletData.address;
 }
 
 function amountConverter(amount){
@@ -184,24 +144,73 @@ function getCookie(cb){
 function setCookie(value){
 	console.log(value);
 	chrome.storage.local.set({ 'address' : value }, function(){
-		console.log("complete")
 	});
 }
 
-function showMain(){
-	$('#main').transition({
-		animation  : 'fade',
-		duration   : '1.2s',
-	});
-}
 
-function showAddAcount(){
-	$('.ui.dimmer').dimmer('show');
-}
 
-function showInfo(){
-	$('#info').transition({
-		animation  : 'fade',
-		duration   : '1s',                              
-	});
-}
+
+// function getTransaction(){
+// 	var url = getTransactionURL + "?address=" + wallet_address + "&limit=20&offset=0";
+// 	console.log(url);
+// 	$.ajax({
+//             type: "GET", //or GET
+//             url: url,
+//             crossDomain:true,
+//             cache:false,
+//             async:false,
+//             success: function(data){
+//             	if(data.success == true){
+//             		console.log(data);
+//             		setTransactionData(data.transactions);
+//             	} else {
+//             		console.log(data);
+//             	}
+//             },
+//             error: function(data){
+//             	console.log(data);
+//             }
+//         });
+// }
+
+
+// function getBalance(){
+// 	url = "https://api.coinmarketcap.com/v1/ticker/ark/";
+// 	$.ajax({
+//             type: "GET", //or GET
+//             url: url,
+//             crossDomain:true,
+//             cache:false,
+//             async:false,
+//             success: function(data){
+//             	usd_currency = data[0].price_usd;            	
+//             	btc_currency = data[0].price_btc;
+
+// 				$('.usdPrice').text("$ " + usd_currency);
+// 				$('.btcPrice').text("Ƀ " + btc_currency);
+// 				getKRWBalance();		
+//             },
+//             error: function(data){
+//             	console.log(data);
+//             }
+//         });
+// }
+
+// function getKRWBalance(){
+// 	url = "https://api.coinone.co.kr/ticker/?format=json&currency=btc";
+// 	$('.krwPrice').text('');
+// 	$.ajax({
+//             type: "GET", //or GET
+//             url: url,
+//             crossDomain:true,
+//             cache:false,
+//             async:false,
+//             success: function(data){
+//             	krw_currency = parseInt(data.last * btc_currency);
+//             	$('.krwPrice').text("₩ " + krw_currency);
+//             },
+//             error: function(data){
+//             	console.log(data);
+//             },
+//         });
+// }
