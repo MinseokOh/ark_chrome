@@ -1,7 +1,5 @@
 var cacheWalletData;
 
-var currency = 'btc';
-var btc_currency = 0.0001;
 init();
 
 function init(){
@@ -31,11 +29,13 @@ function loadAccount() {
 			}
 		}
 	});
+
+	getBalance('krw');
 }
 
 function setWalletData(){
 	var data = cacheWalletData;
-	$('#wallet_title').text('MY ACCOUNTS ' + 'Ѧ'+ amountConverter(data.balance));
+	$('#wallet_title').text('MY ACCOUNTS ' + 'Ѧ'+ amountConverter(data.balance) + ' / ' + currencySymbol[currnetCurrency] + amountConverter(data.balance * marketCurrency[currnetCurrency]));
 
 	var element = '<a class="item info"><div class="right floated content">Ѧ${AMOUNT}</div><div class="left floated content">${WALLET_ADDRESS}</div></a>';
 	$('#wallet_list').empty();	
@@ -50,6 +50,7 @@ function setWalletData(){
 
 	$('#qrcode').qrcode({width: 90,height: 90,text: JSON.stringify({a:data.address})});
 
+	$('.convertVal').text(currencySymbol[currnetCurrency] + amountConverter(data.balance * marketCurrency[currnetCurrency]));
 	getTransactionByAddress({
 		data : {
 			limit : 30,
@@ -72,7 +73,7 @@ function setTransactionData(data){
 		amount = amountConverter(data[i].amount);
 		sender = typeConverter(data[i].senderId);
 		var labelAmount = label.replace("${COLOR}", sender==true ? "red" : "green").replace("${AMOUNT}",(sender==true ? "-" : "" )+ amount);
-		$('#transaction').append(element.replace("${BALANCE}", (amount * btc_currency).toFixed(4)).replace("${TYPE}", sender==true ? "Send" : "Recived").replace("${AMOUNT}", labelAmount));
+		$('#transaction').append(element.replace("${BALANCE}", (amount * marketCurrency[currnetCurrency]).toFixed(4)).replace("${TYPE}", sender==true ? "Send" : "Recived").replace("${AMOUNT}", labelAmount));
 	}
 }
 
@@ -104,7 +105,9 @@ function initEvent(){
 				}
 			}
 		});
-	});	
+	});
+
+	$('.button.convertVal').click(changeCurrency);
 
 	$('input[name=address]').on('input',function(){
 		if($(this).val() == ""){
@@ -113,6 +116,18 @@ function initEvent(){
 			$('.btn.addWallet').removeClass('disabled');
 		}
 	});	
+}
+
+function changeCurrency() {
+	var idx = currency.indexOf(currnetCurrency);
+	if(idx ==  currency.length -1) {
+		idx = 0;
+	} else {
+		idx++;
+	}
+	currnetCurrency = currency[idx];
+
+	$('.convertVal').text(currencySymbol[currnetCurrency] + amountConverter(cacheWalletData.balance * marketCurrency[currnetCurrency]));	
 }
 
 function typeConverter(senderid){
