@@ -90,7 +90,7 @@ function setTransactionData(data){
 		amount = amountConverter(data[i].amount);
 		sender = typeConverter(data[i].senderId);
 		var labelAmount = label.replace("${COLOR}", sender==true ? "red" : "green").replace("${AMOUNT}",(sender==true ? "-" : "" )+ amount);
-		$('#transaction').append(element.replace("${BALANCE}", (amount * marketCurrency[currnetCurrency]).toFixed(4)).replace("${LINK}",link).replace("${ID}",id).replace("${TYPE}", sender==true ? "Send" : "Recived").replace("${AMOUNT}", labelAmount));
+		$('#transaction').append(element.replace("${BALANCE}", (amount * marketCurrency['btc']).toFixed(4)).replace("${LINK}",link).replace("${ID}",id).replace("${TYPE}", sender==true ? "Send" : "Recived").replace("${AMOUNT}", labelAmount));
 	}
 
 	$('.txlink').click(function(){
