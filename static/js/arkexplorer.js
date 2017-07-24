@@ -4,13 +4,24 @@ init();
 
 function init(){
 	initEvent();
+
 	loadAccount();
+	getBalance('krw');
+
 	showHome();	
 }
 
 function loadAccount() {
-	getCookie(function(data){
-		address = data.address;
+	getCookie(null, function(data){
+		var address = data.address;
+		var balance = data.balance;
+		if(balance != null) {
+			currnetCurrency = balance;
+		} else {
+			currnetCurrency = 'btc';
+			setCookie({'balance': currnetCurrency});
+		}
+
 		if(address != null){
 			if(cacheWalletData == null) {
 				getAccount({
@@ -28,14 +39,17 @@ function loadAccount() {
 				setWalletData();
 			}
 		}
+
+
 	});
 
-	getBalance('krw');
+	getCookie(null,function(data){
+
+	});
 }
 
 function setWalletData(){
 	var data = cacheWalletData;
-	$('#wallet_title').text('MY ACCOUNTS ' + 'Ѧ'+ amountConverter(data.balance) + ' / ' + currencySymbol[currnetCurrency] + amountConverter(data.balance * marketCurrency[currnetCurrency]));
 
 	var element = '<a class="item info"><div class="right floated content">Ѧ${AMOUNT}</div><div class="left floated content">${WALLET_ADDRESS}</div></a>';
 	$('#wallet_list').empty();	
@@ -50,7 +64,8 @@ function setWalletData(){
 
 	$('#qrcode').qrcode({width: 90,height: 90,text: JSON.stringify({a:data.address})});
 
-	$('.convertVal').text(currencySymbol[currnetCurrency] + amountConverter(data.balance * marketCurrency[currnetCurrency]));
+	setCurrency();
+
 	getTransactionByAddress({
 		data : {
 			limit : 30,
@@ -65,18 +80,25 @@ function setWalletData(){
 
 function setTransactionData(data){
 	var label = '<div class="ui ${COLOR} label">${AMOUNT}</div>';
-	var element = '<tr><td>${TYPE}</td><td>${AMOUNT}</td><td>${BALANCE}</td></tr>';
+	var element = '<tr><td><a class="txlink" href="${LINK}">${ID}</a></td><td>${TYPE}</td><td>${AMOUNT}</td><td>${BALANCE}</td></tr>';
 	$('#transaction').empty();
 
 	for(var i = 0; i < data.length; i++){
+		id = data[i].id.substring(0,10) + "..";
+		link = "https://explorer.ark.io/tx/" + data[i].id;	
 		time = timeConverter(data[i].timestamp);
 		amount = amountConverter(data[i].amount);
 		sender = typeConverter(data[i].senderId);
 		var labelAmount = label.replace("${COLOR}", sender==true ? "red" : "green").replace("${AMOUNT}",(sender==true ? "-" : "" )+ amount);
-		$('#transaction').append(element.replace("${BALANCE}", (amount * marketCurrency[currnetCurrency]).toFixed(4)).replace("${TYPE}", sender==true ? "Send" : "Recived").replace("${AMOUNT}", labelAmount));
+		$('#transaction').append(element.replace("${BALANCE}", (amount * marketCurrency[currnetCurrency]).toFixed(4)).replace("${LINK}",link).replace("${ID}",id).replace("${TYPE}", sender==true ? "Send" : "Recived").replace("${AMOUNT}", labelAmount));
 	}
-}
 
+	$('.txlink').click(function(){
+		console.log($(this).attr('href'));
+
+		openTabs($(this).attr('href'));
+	});
+}
 
 function initEvent(){
 	$('.btn.home').click(function(){
@@ -97,7 +119,7 @@ function initEvent(){
 			callback : function(data){
 				if(data.success == true) {
 					cacheWalletData = data;
-					setCookie(data.address);
+					setCookie({'address': data.address});
 					loadAccount();
 					showAddWallet('hide');
 				} else {
@@ -126,106 +148,18 @@ function changeCurrency() {
 		idx++;
 	}
 	currnetCurrency = currency[idx];
-
-	$('.convertVal').text(currencySymbol[currnetCurrency] + amountConverter(cacheWalletData.balance * marketCurrency[currnetCurrency]));	
+	setCookie({'balance' : currency[idx]});
+	setCurrency();
 }
 
-function typeConverter(senderid){
-	return senderid == cacheWalletData.address;
-}
+function setCurrency(){
+	currentValue = currencySymbol[currnetCurrency] + amountConverter(cacheWalletData.balance * marketCurrency[currnetCurrency]);
 
-function amountConverter(amount){
-	var amount = amount /100000000;
-	return amount.toFixed(2);
-}
+	if(currnetCurrency != 'btc')
+		currentValue = amountCommaConverter(currentValue);
 
-function timeConverter(unixtime){
-	var a = new Date(unixtime * 1000);
-	var year = a.getYear();
-	var month = a.getMonth();
-	var date = a.getDate();
-	var hour = a.getHours();
-	var min = a.getMinutes();
-	var time = date + '/' + month + ' ' + hour + ':' + min;
-	return time;
-}
-
-function getCookie(cb){
-	chrome.storage.local.get(['address'], function(items){
-		cb(items)
-	});
-}
-
-function setCookie(value){
-	console.log(value);
-	chrome.storage.local.set({ 'address' : value }, function(){
-	});
+	$('.convertVal').text(currentValue);
+	$('#wallet_title').text('MY ACCOUNTS ' + 'Ѧ'+ amountConverter(cacheWalletData.balance) + '  /  ' + currentValue);
 }
 
 
-
-
-// function getTransaction(){
-// 	var url = getTransactionURL + "?address=" + wallet_address + "&limit=20&offset=0";
-// 	console.log(url);
-// 	$.ajax({
-//             type: "GET", //or GET
-//             url: url,
-//             crossDomain:true,
-//             cache:false,
-//             async:false,
-//             success: function(data){
-//             	if(data.success == true){
-//             		console.log(data);
-//             		setTransactionData(data.transactions);
-//             	} else {
-//             		console.log(data);
-//             	}
-//             },
-//             error: function(data){
-//             	console.log(data);
-//             }
-//         });
-// }
-
-
-// function getBalance(){
-// 	url = "https://api.coinmarketcap.com/v1/ticker/ark/";
-// 	$.ajax({
-//             type: "GET", //or GET
-//             url: url,
-//             crossDomain:true,
-//             cache:false,
-//             async:false,
-//             success: function(data){
-//             	usd_currency = data[0].price_usd;            	
-//             	btc_currency = data[0].price_btc;
-
-// 				$('.usdPrice').text("$ " + usd_currency);
-// 				$('.btcPrice').text("Ƀ " + btc_currency);
-// 				getKRWBalance();		
-//             },
-//             error: function(data){
-//             	console.log(data);
-//             }
-//         });
-// }
-
-// function getKRWBalance(){
-// 	url = "https://api.coinone.co.kr/ticker/?format=json&currency=btc";
-// 	$('.krwPrice').text('');
-// 	$.ajax({
-//             type: "GET", //or GET
-//             url: url,
-//             crossDomain:true,
-//             cache:false,
-//             async:false,
-//             success: function(data){
-//             	krw_currency = parseInt(data.last * btc_currency);
-//             	$('.krwPrice').text("₩ " + krw_currency);
-//             },
-//             error: function(data){
-//             	console.log(data);
-//             },
-//         });
-// }
