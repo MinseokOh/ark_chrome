@@ -3,7 +3,7 @@ var currencySymbol = { 'btc' : 'Ƀ', 'usd' : '$', 'krw' : '₩'};
 var marketCurrency = {};
 var currnetCurrency = 'btc';
 
-var baseUrl = "https://explorer.ark.io/api/";
+var baseUrl = "http://explorer.arkgallery.net/api/";
 
 // params
 // address 	: string

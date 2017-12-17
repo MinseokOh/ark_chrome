@@ -3,7 +3,7 @@
 
   "name": "Ark Chrome Client",
   "description": "Ark Wallet for Chrome Extension!",
-  "version": "0.1.3",
+  "version": "0.2.0",
 
   "browser_action": {
       "default_icon": "./static/image/ark16x16.png",

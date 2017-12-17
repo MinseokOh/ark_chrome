@@ -1,4 +1,5 @@
 var menu = 'home';
+var userLanguage = navigator.language || navigator.userLanguage;
 
 function showHome(complete){
 	if(checkTransition() == true)
@@ -34,3 +35,4 @@ function checkTransition() {
 function showAddWallet(condition){
 	$('#addwallet').dimmer(condition);
 }
+
