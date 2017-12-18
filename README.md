@@ -1,4 +1,4 @@
-# ARK CHROME CLIENT v0.1.3
+# ARK CHROME CLIENT v0.2.0
 
 Ark Wallet for Chrome Extension 
 
